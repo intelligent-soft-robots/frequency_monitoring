@@ -39,6 +39,61 @@ ament_export_interfaces(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
 list(APPEND all_targets ${PROJECT_NAME})
 list(APPEND all_target_exports export_${PROJECT_NAME})
 
+
+###################
+# Python wrappers #
+###################
+
+# note: wrappers not expected to be used directly by user.
+#       used only indirectly, via the python native code
+
+add_library(${PROJECT_NAME}_py MODULE srcpy/wrappers.cpp)
+target_link_libraries(${PROJECT_NAME}_py PRIVATE pybind11::module)
+target_link_libraries(${PROJECT_NAME}_py PRIVATE ${PYTHON_LIBRARIES})
+target_link_libraries(${PROJECT_NAME}_py PRIVATE ${PROJECT_NAME})
+set_target_properties(${PROJECT_NAME}_py
+  PROPERTIES PREFIX "" SUFFIX "${PYTHON_MODULE_EXTENSION}"
+  OUTPUT_NAME ${PROJECT_NAME}_wrp)
+target_include_directories(
+  ${PROJECT_NAME}_py
+  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+         $<INSTALL_INTERFACE:include> SYSTEM
+  PUBLIC ${PYTHON_INCLUDE_DIRS})
+_ament_cmake_python_get_python_install_dir()
+install(TARGETS ${PROJECT_NAME}_py DESTINATION ${PYTHON_INSTALL_DIR})
+
+
+######################
+# Python Native code #
+######################
+
+ament_python_install_package(${PROJECT_NAME} PACKAGE_DIR python/${PROJECT_NAME})
+
+
+###############
+# Executables #
+###############
+
+configure_file(${CMAKE_CURRENT_LIST_DIR}/bin/frequency_monitoring
+  ${CMAKE_INSTALL_PREFIX}/bin/frequency_monitoring COPYONLY)
+
+
+#############
+# CPP demos #
+#############
+
+add_executable(frequency_monitoring_point_demo
+  demos/frequency_monitoring_point_demo.cpp)
+target_include_directories(
+  frequency_monitoring_point_demo
+  PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+         $<INSTALL_INTERFACE:include>)
+target_link_libraries(frequency_monitoring_point_demo ${PROJECT_NAME})
+set(all_targets ${all_targets} frequency_monitoring_point_demo)
+install(TARGETS frequency_monitoring_point_demo RUNTIME DESTINATION lib/${PROJECT_NAME})
+
+
+
 ######################
 # Install and export #
 ######################

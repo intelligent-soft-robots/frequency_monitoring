@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+
+import sys
+from lightargs import BrightArgs
+from frequency_monitoring import frequency_display
+
+"""
+This executable assumes another process is calling
+frequency_monitoring.FrequencyMonitoring.share on the same 
+segment id. 
+It displays stats related to the shared frequency data.
+"""
+
+
+def _run(segment_id,frequency):
+    frequency_display(segment_id,frequency)
+
+
+def _configure():
+    config = BrightArgs("Frequency Monitoring")
+    config.add_option("segment_id",
+                      None,
+                      "shared memory segment_id",
+                      str)
+    config.add_option("frequency",
+                      20.,
+                      "refresh frequency",
+                      float)
+    change_all=False
+    finished = config.dialog(change_all,sys.argv[1:])
+    if not finished:
+        return None
+    return config
+
+
+def _execute():
+    config = _configure()
+    if config is None:
+        return
+    _run(config.segment_id,
+         config.frequency)
+    
+if __name__ == "__main__":
+    _execute()
