@@ -29,6 +29,15 @@ class FrequencyMonitoring:
         self._size = size
         self._timestamps = deque([None] * size, size)
 
+    def __del__(self):
+        shared_memory.clear_shared_memory(self._segment_id)
+
+    def reset(self):
+        """
+        Remove all entries from the rotating memory
+        """
+        self._timestamps = deque([None] * self._size, self._size)
+        
     def ping(self):
         """
         Add a time stamp (current time) to the rotating
@@ -88,6 +97,19 @@ class _FrequencyDisplay:
         self._monitor_exit_thread.setDaemon(True)
         self._monitor_exit_thread.start()
 
+        self._wait_for_segment_id()
+        
+    def _wait_for_segment_id(self):
+
+        self._screen.clear()
+        self._screen.addstr(str("\nwaiting for segment id: {}"
+                                ". Press 'q' to exit\n\n").format(self._segment_id))
+        self._screen.refresh()
+        while not self.should_exit:
+            started = shared_memory.wait_for_segment(self._segment_id,500)
+            if started:
+                return
+            
     def _monitor_exit(self):
         # detecting if 'q' was pressed, which set _should_exit
         # to True, which will stop the loop
@@ -143,6 +165,8 @@ def frequency_display(segment_id: str, frequency: float):
     content in a terminal (assumes another process is
     using FrequencyMonitoring.share). 'q' to exit.
     """
+
+    
     
     fd = _FrequencyDisplay(segment_id)
 
