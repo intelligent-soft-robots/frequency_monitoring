@@ -5,6 +5,7 @@
 #include <numeric>
 #include <string>
 #include <iostream>
+#include <vector>
 
 namespace frequency_monitoring
 {
