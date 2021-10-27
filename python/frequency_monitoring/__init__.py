@@ -37,7 +37,7 @@ class FrequencyMonitoring:
         Remove all entries from the rotating memory
         """
         self._timestamps = deque([None] * self._size, self._size)
-        
+
     def ping(self):
         """
         Add a time stamp (current time) to the rotating
@@ -74,11 +74,11 @@ def read(segment_id: str):
 class _FrequencyDisplay:
 
     """
-    class for reading instances of FrequencyPoint from the 
+    class for reading instances of FrequencyPoint from the
     shared memory and displaying the related content to the
     terminal
     """
-    
+
     def __init__(self, segment_id: str):
 
         self._segment_id = segment_id
@@ -98,18 +98,21 @@ class _FrequencyDisplay:
         self._monitor_exit_thread.start()
 
         self._wait_for_segment_id()
-        
+
     def _wait_for_segment_id(self):
 
         self._screen.clear()
-        self._screen.addstr(str("\nwaiting for segment id: {}"
-                                ". Press 'q' to exit\n\n").format(self._segment_id))
+        self._screen.addstr(
+            str("\nwaiting for segment id: {}" ". Press 'q' to exit\n\n").format(
+                self._segment_id
+            )
+        )
         self._screen.refresh()
         while not self.should_exit:
-            started = shared_memory.wait_for_segment(self._segment_id,500)
+            started = shared_memory.wait_for_segment(self._segment_id, 500)
             if started:
                 return
-            
+
     def _monitor_exit(self):
         # detecting if 'q' was pressed, which set _should_exit
         # to True, which will stop the loop
@@ -127,12 +130,15 @@ class _FrequencyDisplay:
         # read an instance of FrequencyPoint from the
         # shared memory, and write the corresponding
         # data to the console
-        
+
         frequency_point = read(self._segment_id)
 
         self._screen.clear()
-        self._screen.addstr(str("\nmonitoring frequency: {}"
-                                 ". Press 'q' to exit\n\n").format(self._segment_id))
+        self._screen.addstr(
+            str("\nmonitoring frequency: {}" ". Press 'q' to exit\n\n").format(
+                self._segment_id
+            )
+        )
 
         if not frequency_point:
             report = "error: should be started after the main program"
@@ -166,8 +172,6 @@ def frequency_display(segment_id: str, frequency: float):
     using FrequencyMonitoring.share). 'q' to exit.
     """
 
-    
-    
     fd = _FrequencyDisplay(segment_id)
 
     period = 1.0 / frequency
