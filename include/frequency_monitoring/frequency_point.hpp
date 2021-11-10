@@ -2,9 +2,9 @@
 
 #include <math.h>
 #include <algorithm>
+#include <iostream>
 #include <numeric>
 #include <string>
-#include <iostream>
 #include <vector>
 
 namespace frequency_monitoring
@@ -20,7 +20,7 @@ public:
      * with the min value, the max value, the
      * mean and the standard deviation initialized to -1.
      */
-  FrequencyPoint();
+    FrequencyPoint();
 
     /* ! The vector input is expected to encapsulate
      *   time stamps in seconds, ordered in increasing
@@ -50,10 +50,8 @@ public:
     double sd;
 
 private:
-  // tmp vector for calculation
-  std::vector<double> frequencies_;
-  
+    // tmp vector for calculation
+    std::vector<double> frequencies_;
 };
 
-  
 }  // namespace frequency_monitoring
