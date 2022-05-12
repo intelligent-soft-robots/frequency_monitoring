@@ -13,8 +13,9 @@ void FrequencyPoint::set(const std::vector<double>& timestamps)
 
     // transform to vector of frequencies
     double size = static_cast<double>(timestamps.size());
-    auto get_frequency = [](double t2, double t1) -> double
-    { return 1. / (t2 - t1); };
+    auto get_frequency = [](double t2, double t1) -> double {
+        return 1. / (t2 - t1);
+    };
     std::transform(timestamps.begin() + 1,
                    timestamps.end(),
                    timestamps.begin(),
@@ -31,8 +32,7 @@ void FrequencyPoint::set(const std::vector<double>& timestamps)
     // computing standard deviation
     double mean_ = mean;  // for capture below
     auto get_variance = [&mean_, &size](double accumulator,
-                                        const double& value) -> double
-    {
+                                        const double& value) -> double {
         double dmean = (value - mean_) * (value - mean_);
         return accumulator + dmean;
     };

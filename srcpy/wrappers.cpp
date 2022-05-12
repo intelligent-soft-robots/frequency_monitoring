@@ -21,9 +21,7 @@ PYBIND11_MODULE(frequency_monitoring_wrp, m)
                   segment_id, segment_id, fp);
           });
 
-    m.def("deserialize",
-          [](const std::string& segment_id, FrequencyPoint& fp) {
-              shared_memory::deserialize<FrequencyPoint>(
-                  segment_id, segment_id, fp);
-          });
+    m.def("deserialize", [](const std::string& segment_id, FrequencyPoint& fp) {
+        shared_memory::deserialize<FrequencyPoint>(segment_id, segment_id, fp);
+    });
 }
